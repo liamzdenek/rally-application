@@ -58,11 +58,11 @@
 │  │  │ experimentDef   │  │ experimentRes   │  │ experimentAnal  │                 │
 │  │  │                 │  │                 │  │                 │                 │
 │  │  │ - id (PK)       │  │ - expId (PK)    │  │ - expId (PK)    │                 │
-│  │  │ - name          │  │ - metric (SK)   │  │ - analysisId    │                 │
-│  │  │ - description   │  │ - timepoint     │  │ - didResults    │                 │
-│  │  │ - metrics[]     │  │ - treatment     │  │ - economicImp   │                 │
-│  │  │ - timeRange     │  │ - control       │  │ - metricVals    │                 │
-│  │  │ - status        │  │ - value         │  │ - timestamp     │                 │
+│  │  │ - name          │  │ - metrics{}     │  │ - analysisId    │                 │
+│  │  │ - description   │  │ - timeSeries[]  │  │ - didResults    │                 │
+│  │  │ - metrics[]     │  │ - summary{}     │  │ - economicImp   │                 │
+│  │  │ - timeRange     │  │ - generated     │  │ - metricVals    │                 │
+│  │  │ - status        │  │ - period{}      │  │ - timestamp     │                 │
 │  │  └─────────────────┘  └─────────────────┘  └─────────────────┘                 │
 │  │                              │                                                 │
 │  │                      DynamoDB Stream                                           │
@@ -176,7 +176,7 @@ packages/
 
 ### 2. Data Storage Strategy
 - **experimentDefinition**: Core experiment metadata
-- **experimentResults**: Time-series data for each metric (treatment/control)
+- **experimentResults**: Single record with nested metrics and complete time series data
 - **experimentAnalysis**: Computed DiD results + economic impact + snapshot of metric values
 - **metricValues**: Current dollar values per unit for each metric
 
@@ -184,7 +184,7 @@ packages/
 - **React** with **TanStack Router** for client-side routing
 - **CSS Modules** for styling (Dropbox Design-style)
 - **Three main pages**: Create Experiment, View Results, Manage Metric Values
-- **Prefilled experiment templates** via buttons
+- **Client-side templates** for prefilling experiment forms
 
 ### 4. API Design
 ```
