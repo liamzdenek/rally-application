@@ -37,6 +37,24 @@
         }
       }
     },
+    "install-dependencies": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd dist/packages/analysis-processor && npm install --production",
+        "cwd": "."
+      },
+      "dependsOn": ["build"]
+    },
+    "build-with-dependencies": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "nx build analysis-processor",
+          "nx run analysis-processor:install-dependencies"
+        ],
+        "parallel": false
+      }
+    },
     "serve": {
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",

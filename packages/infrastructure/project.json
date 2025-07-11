@@ -25,7 +25,7 @@
       },
       "dependsOn": [
         {
-          "projects": ["api"],
+          "projects": ["api-handler", "results-generator", "analysis-processor"],
           "target": "build-with-dependencies"
         }
       ]
@@ -38,7 +38,7 @@
       },
       "dependsOn": [
         {
-          "projects": ["api"],
+          "projects": ["api-handler", "results-generator", "analysis-processor"],
           "target": "build-with-dependencies"
         }
       ]
@@ -58,7 +58,7 @@
       },
       "dependsOn": [
         {
-          "projects": ["api"],
+          "projects": ["api-handler", "results-generator", "analysis-processor"],
           "target": "build-with-dependencies"
         }
       ]

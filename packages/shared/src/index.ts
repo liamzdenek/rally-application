@@ -1,1 +1,5 @@
-export * from './lib/shared';
+// Export all types
+export * from './types';
+
+// Export all schemas
+export * from './schemas';

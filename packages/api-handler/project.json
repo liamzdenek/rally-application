@@ -37,6 +37,24 @@
         }
       }
     },
+    "install-dependencies": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd dist/packages/api-handler && npm install --production",
+        "cwd": "."
+      },
+      "dependsOn": ["build"]
+    },
+    "build-with-dependencies": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "nx build api-handler",
+          "nx run api-handler:install-dependencies"
+        ],
+        "parallel": false
+      }
+    },
     "serve": {
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",

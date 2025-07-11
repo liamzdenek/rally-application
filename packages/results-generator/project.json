@@ -37,6 +37,24 @@
         }
       }
     },
+    "install-dependencies": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cd dist/packages/results-generator && npm install --production",
+        "cwd": "."
+      },
+      "dependsOn": ["build"]
+    },
+    "build-with-dependencies": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "nx build results-generator",
+          "nx run results-generator:install-dependencies"
+        ],
+        "parallel": false
+      }
+    },
     "serve": {
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
