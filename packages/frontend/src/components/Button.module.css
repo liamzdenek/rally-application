@@ -1,0 +1,93 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 4px solid #000;
+  background: transparent;
+  color: #000;
+  outline: none;
+  position: relative;
+}
+
+.button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.button:focus {
+  box-shadow: 0 0 0 2px #007bff;
+}
+
+/* Variants */
+.primary {
+  background: #007bff;
+  color: #fff;
+  border-color: #000;
+}
+
+.primary:hover {
+  background: #0056b3;
+}
+
+.secondary {
+  background: #6c757d;
+  color: #fff;
+  border-color: #000;
+}
+
+.secondary:hover {
+  background: #545b62;
+}
+
+.danger {
+  background: #dc3545;
+  color: #fff;
+  border-color: #000;
+}
+
+.danger:hover {
+  background: #c82333;
+}
+
+/* Sizes */
+.small {
+  padding: 8px 16px;
+  font-size: 14px;
+  border-width: 3px;
+}
+
+.medium {
+  padding: 12px 24px;
+  font-size: 16px;
+  border-width: 4px;
+}
+
+.large {
+  padding: 16px 32px;
+  font-size: 18px;
+  border-width: 4px;
+}
+
+/* Disabled state */
+.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.disabled:hover {
+  background: initial;
+  transform: none;
+  box-shadow: none;
+}

@@ -1,0 +1,338 @@
+.settings {
+  padding: 20px;
+  background: transparent;
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 32px;
+}
+
+.header div {
+  flex: 1;
+}
+
+.header h1 {
+  font-size: 28px;
+  font-weight: bold;
+  color: #000;
+  margin: 0 0 8px 0;
+}
+
+.header p {
+  font-size: 16px;
+  color: #666;
+  margin: 0;
+}
+
+.errorBanner {
+  padding: 16px;
+  border: 3px solid #dc3545;
+  background: #f8d7da;
+  color: #721c24;
+  margin-bottom: 20px;
+}
+
+.errorBanner p {
+  margin: 0;
+  font-weight: bold;
+}
+
+.formHeader {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 3px solid #000;
+}
+
+.formHeader h2 {
+  font-size: 20px;
+  font-weight: bold;
+  color: #000;
+  margin: 0;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.section h3 {
+  font-size: 18px;
+  font-weight: bold;
+  color: #000;
+  margin: 0;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #000;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field label {
+  font-weight: bold;
+  color: #000;
+  font-size: 14px;
+}
+
+.field input,
+.field textarea,
+.field select {
+  padding: 12px;
+  border: 3px solid #000;
+  background: transparent;
+  font-size: 16px;
+  color: #000;
+  transition: border-color 0.2s;
+}
+
+.field input:focus,
+.field textarea:focus,
+.field select:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.field input.error,
+.field textarea.error,
+.field select.error {
+  border-color: #dc3545;
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.field input:disabled {
+  background: #f8f9fa;
+  color: #666;
+  cursor: not-allowed;
+}
+
+.errorText {
+  color: #dc3545;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.valueFields {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: end;
+}
+
+.validationFields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding-top: 20px;
+  border-top: 3px solid #000;
+}
+
+.metricsList {
+  margin-top: 40px;
+}
+
+.metricsList h2 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #000;
+  margin: 0 0 24px 0;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 40px;
+}
+
+.emptyState p {
+  color: #666;
+  margin: 0 0 12px 0;
+}
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 20px;
+}
+
+.metricCard {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.metricHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.metricHeader h3 {
+  font-size: 18px;
+  font-weight: bold;
+  color: #000;
+  margin: 0;
+}
+
+.metricId {
+  font-size: 12px;
+  color: #666;
+  font-family: monospace;
+  margin: 4px 0 0 0;
+}
+
+.category {
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: bold;
+  border: 2px solid #000;
+  background: #007bff;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.metricValue {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.value {
+  font-size: 24px;
+  font-weight: bold;
+  color: #28a745;
+}
+
+.unit {
+  font-size: 14px;
+  color: #666;
+}
+
+.description {
+  color: #333;
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.validation {
+  padding: 12px;
+  border: 2px solid #000;
+  background: #f8f9fa;
+}
+
+.validation p {
+  margin: 0 0 8px 0;
+  font-weight: bold;
+  font-size: 12px;
+  color: #000;
+}
+
+.validation ul {
+  margin: 0;
+  padding-left: 16px;
+  font-size: 12px;
+  color: #333;
+}
+
+.validation li {
+  margin: 2px 0;
+}
+
+.metricActions {
+  display: flex;
+  gap: 12px;
+}
+
+.metricMeta {
+  padding-top: 12px;
+  border-top: 1px solid #ddd;
+}
+
+.metricMeta p {
+  margin: 0;
+  font-size: 12px;
+  color: #666;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+  
+  .valueFields {
+    grid-template-columns: 1fr;
+  }
+  
+  .validationFields {
+    grid-template-columns: 1fr;
+  }
+  
+  .metricsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .metricActions {
+    justify-content: stretch;
+  }
+}
+
+@media (max-width: 480px) {
+  .settings {
+    padding: 16px;
+  }
+  
+  .form {
+    gap: 24px;
+  }
+  
+  .section {
+    gap: 16px;
+  }
+  
+  .field input,
+  .field textarea,
+  .field select {
+    padding: 10px;
+  }
+  
+  .metricHeader {
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+  }
+  
+  .category {
+    align-self: flex-start;
+  }
+}
