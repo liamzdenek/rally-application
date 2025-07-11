@@ -1,0 +1,67 @@
+{
+  "name": "infrastructure",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/infrastructure/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/infrastructure",
+        "main": "packages/infrastructure/bin/cdk-app.ts",
+        "tsConfig": "packages/infrastructure/tsconfig.app.json",
+        "assets": ["packages/infrastructure/*.md"],
+        "format": ["cjs"],
+        "generatePackageJson": true
+      }
+    },
+    "bootstrap": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx cdk bootstrap --profile lz-demos",
+        "cwd": "packages/infrastructure"
+      },
+      "dependsOn": [
+        {
+          "projects": ["api"],
+          "target": "build-with-dependencies"
+        }
+      ]
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx cdk deploy --require-approval never --profile lz-demos",
+        "cwd": "packages/infrastructure"
+      },
+      "dependsOn": [
+        {
+          "projects": ["api"],
+          "target": "build-with-dependencies"
+        }
+      ]
+    },
+    "destroy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx cdk destroy --profile lz-demos",
+        "cwd": "packages/infrastructure"
+      }
+    },
+    "synth": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx cdk synth --profile lz-demos",
+        "cwd": "packages/infrastructure"
+      },
+      "dependsOn": [
+        {
+          "projects": ["api"],
+          "target": "build-with-dependencies"
+        }
+      ]
+    }
+  }
+}
