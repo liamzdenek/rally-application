@@ -4,6 +4,7 @@
   "sourceRoot": "packages/results-generator/src",
   "projectType": "application",
   "tags": [],
+  "implicitDependencies": ["shared"],
   "targets": {
     "build": {
       "executor": "@nx/esbuild:esbuild",
@@ -13,7 +14,7 @@
         "platform": "node",
         "outputPath": "dist/packages/results-generator",
         "format": ["cjs"],
-        "bundle": false,
+        "bundle": true,
         "main": "packages/results-generator/src/main.ts",
         "tsConfig": "packages/results-generator/tsconfig.app.json",
         "assets": ["packages/results-generator/src/assets"],

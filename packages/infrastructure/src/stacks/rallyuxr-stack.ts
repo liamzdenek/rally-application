@@ -10,6 +10,10 @@ import * as eventsources from 'aws-cdk-lib/aws-lambda-event-sources';
 import { Construct } from 'constructs';
 import * as path from 'path';
 import * as fs from 'fs';
+import * as dotenv from 'dotenv';
+
+// Load environment variables from .env.prod
+dotenv.config({ path: path.join(__dirname, '../../.env.prod') });
 
 // Find the git root directory
 function findGitRoot(startPath: string): string {
@@ -145,9 +149,12 @@ export class RallyUXRStack extends cdk.Stack {
       runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'main.handler',
       code: lambda.Code.fromAsset(RESULTS_GENERATOR_PATH),
-      timeout: cdk.Duration.seconds(30),
-      memorySize: 1024,
-      environment: commonEnvironment
+      timeout: cdk.Duration.minutes(5), // Longer timeout for Claude API calls
+      memorySize: 512, // More memory for data processing
+      environment: {
+        ...commonEnvironment,
+        CLAUDE_API_KEY: process.env['CLAUDE_API_KEY'] || '',
+      }
     });
 
     // Analysis Processor Lambda (triggered by DynamoDB stream)
@@ -182,6 +189,12 @@ export class RallyUXRStack extends cdk.Stack {
 
     // Grant stream read permissions to analysis processor
     experimentResultsTable.grantStreamRead(analysisProcessorFunction);
+    
+    // Allow API handler to invoke results generator
+    resultsGeneratorFunction.grantInvoke(apiHandlerFunction);
+    
+    // Add results generator function name to API handler environment
+    apiHandlerFunction.addEnvironment('RESULTS_GENERATOR_FUNCTION_NAME', resultsGeneratorFunction.functionName);
 
     // ============================================================================
     // DYNAMODB STREAM EVENT SOURCE

@@ -12,8 +12,19 @@
   "author": "",
   "license": "UNLICENSED",
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.56.0",
+    "@aws-sdk/client-dynamodb": "^3.844.0",
+    "@aws-sdk/lib-dynamodb": "^3.844.0",
+    "@rallyuxr/shared": "^0.0.1",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
     "react": "19.0.0",
-    "react-dom": "19.0.0"
+    "react-dom": "19.0.0",
+    "serverless-http": "^3.2.0",
+    "simple-statistics": "^7.8.8",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.8.0",
@@ -36,6 +47,7 @@
     "@types/node": "^20.0.0",
     "@types/react": "19.0.0",
     "@types/react-dom": "19.0.0",
+    "@types/uuid": "^10.0.0",
     "@vitejs/plugin-react": "^4.2.0",
     "@vitest/ui": "^3.0.0",
     "babel-jest": "^29.7.0",

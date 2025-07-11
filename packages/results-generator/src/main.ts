@@ -1,1 +1,1 @@
-console.log('Hello World');
+export { handler, healthCheck } from './index';
