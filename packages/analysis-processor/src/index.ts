@@ -123,7 +123,8 @@ async function performCompleteAnalysis(experimentResult: ExperimentResult): Prom
   try {
     // Step 1: Get metric values for economic calculations
     console.log('Fetching metric values for economic impact calculation');
-    const metricValues = await dynamoService.getMetricValues();
+    const metricIds = Object.keys(experimentResult.metrics);
+    const metricValues = await dynamoService.getMetricValues(metricIds);
     
     if (Object.keys(metricValues).length === 0) {
       console.warn('No metric values found - economic impact will be limited');

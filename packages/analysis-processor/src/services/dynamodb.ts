@@ -53,41 +53,37 @@ export class DynamoDBService {
   }
 
   /**
-   * Get all metric values for calculating economic impact
+   * Get specific metric values for calculating economic impact
    */
-  async getMetricValues(): Promise<{ [metricId: string]: MetricValue }> {
-    console.log('Fetching all metric values for economic calculations');
+  async getMetricValues(metricIds: string[]): Promise<{ [metricId: string]: MetricValue }> {
+    console.log(`Fetching metric values for ${metricIds.length} metrics:`, metricIds);
     
-    try {
-      const command = new QueryCommand({
-        TableName: METRIC_VALUES_TABLE,
-        IndexName: 'GSI1', // Assuming we have a GSI for querying all metric values
-        KeyConditionExpression: 'gsi1pk = :pk',
-        ExpressionAttributeValues: {
-          ':pk': 'METRIC_VALUE'
+    const metricValues: { [metricId: string]: MetricValue } = {};
+    
+    // Fetch each metric value individually using primary key
+    for (const metricId of metricIds) {
+      try {
+        const command = new GetCommand({
+          TableName: METRIC_VALUES_TABLE,
+          Key: { metricId }
+        });
+
+        const response = await docClient.send(command);
+        
+        if (response.Item) {
+          const metricValue = response.Item as MetricValue;
+          metricValues[metricId] = metricValue;
+          console.log(`Retrieved metric value for ${metricId}: $${metricValue.dollarsPerUnit}/unit`);
+        } else {
+          console.warn(`No metric value found for ${metricId}`);
         }
-      });
-
-      const response = await docClient.send(command);
-      
-      if (!response.Items) {
-        console.log('No metric values found');
-        return {};
+      } catch (error) {
+        console.error(`Error fetching metric value for ${metricId}:`, error);
       }
-
-      // Convert array to object keyed by metricId
-      const metricValues: { [metricId: string]: MetricValue } = {};
-      for (const item of response.Items) {
-        const metricValue = item as MetricValue;
-        metricValues[metricValue.metricId] = metricValue;
-      }
-
-      console.log(`Successfully retrieved ${Object.keys(metricValues).length} metric values`);
-      return metricValues;
-    } catch (error) {
-      console.error('Error fetching metric values:', error);
-      throw new Error(`Failed to fetch metric values: ${error}`);
     }
+
+    console.log(`Successfully retrieved ${Object.keys(metricValues).length}/${metricIds.length} metric values`);
+    return metricValues;
   }
 
   /**
@@ -222,13 +218,15 @@ export class DynamoDBService {
     console.log(`Checking if analysis exists for experimentId: ${experimentId}, generatedAt: ${generatedAt}`);
     
     try {
+      // Convert generatedAt to timestamp for analysisId prefix matching
+      const generatedTimestamp = new Date(generatedAt).getTime().toString();
+      
       const command = new QueryCommand({
         TableName: EXPERIMENT_ANALYSIS_TABLE,
-        KeyConditionExpression: 'experimentId = :experimentId',
-        FilterExpression: 'contains(analysisId, :generatedAt)',
+        KeyConditionExpression: 'experimentId = :experimentId AND begins_with(analysisId, :timestampPrefix)',
         ExpressionAttributeValues: {
           ':experimentId': experimentId,
-          ':generatedAt': generatedAt.split('T')[0] // Use date part for comparison
+          ':timestampPrefix': generatedTimestamp.substring(0, 10) // Use first 10 digits of timestamp for prefix matching
         },
         Select: 'COUNT'
       });
@@ -236,7 +234,7 @@ export class DynamoDBService {
       const response = await docClient.send(command);
       const exists = (response.Count || 0) > 0;
       
-      console.log(`Analysis exists check for ${experimentId}: ${exists}`);
+      console.log(`Analysis exists check for ${experimentId}: ${exists} (timestamp prefix: ${generatedTimestamp.substring(0, 10)})`);
       return exists;
     } catch (error) {
       console.error(`Error checking analysis existence for experimentId ${experimentId}:`, error);
