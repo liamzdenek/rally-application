@@ -16,7 +16,12 @@ const ExperimentDetails: React.FC = () => {
   
   const experiment = experimentResponse?.data?.experiment
   const results = resultsResponse?.data?.results
-  const analysis = analysisResponse?.data
+  const analysis = analysisResponse?.data?.analysis
+
+  // Debug logging
+  console.log('Analysis Response:', analysisResponse)
+  console.log('Analysis Data:', analysis)
+  console.log('Analysis didResults:', analysis?.didResults)
 
 
   if (expLoading) {
@@ -138,32 +143,42 @@ const ExperimentDetails: React.FC = () => {
             <div className={styles.analysisGrid}>
               <div className={styles.analysisSection}>
                 <h3>Difference-in-Differences Results</h3>
-                {analysis.didResults && Object.entries(analysis.didResults).map(([metricId, result]: [string, any]) => (
-                  <div key={metricId} className={styles.metricResult}>
-                    <h4>{metricId.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</h4>
-                    <div className={styles.statGrid}>
-                      <div>
-                        <strong>Treatment Effect:</strong> {result.treatmentEffect?.toFixed(4) || 'N/A'}
-                      </div>
-                      <div>
-                        <strong>P-Value:</strong> {result.pValue?.toFixed(4) || 'N/A'}
-                      </div>
-                      <div>
-                        <strong>Confidence Interval:</strong>
-                        {result.confidenceInterval
-                          ? `[${result.confidenceInterval.lower?.toFixed(4)}, ${result.confidenceInterval.upper?.toFixed(4)}]`
-                          : 'N/A'
-                        }
-                      </div>
-                      <div>
-                        <strong>Significant:</strong>
-                        <span className={result.pValue < 0.05 ? styles.significant : styles.notSignificant}>
-                          {result.pValue < 0.05 ? 'Yes' : 'No'}
-                        </span>
+                {analysis?.didResults && Object.keys(analysis.didResults).length > 0 ? (
+                  Object.entries(analysis.didResults).map(([metricId, result]: [string, any]) => (
+                    <div key={metricId} className={styles.metricResult}>
+                      <h4>{metricId.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</h4>
+                      <div className={styles.statGrid}>
+                        <div>
+                          <strong>Absolute Difference:</strong> {result.absoluteDifference?.toFixed(4) || 'N/A'}
+                        </div>
+                        <div>
+                          <strong>Relative Difference:</strong> {(result.relativeDifference * 100)?.toFixed(2) || 'N/A'}%
+                        </div>
+                        <div>
+                          <strong>P-Value:</strong> {result.pValue?.toFixed(4) || 'N/A'}
+                        </div>
+                        <div>
+                          <strong>Confidence Interval:</strong> 
+                          {result.confidenceInterval 
+                            ? `[${result.confidenceInterval.lower?.toFixed(4)}, ${result.confidenceInterval.upper?.toFixed(4)}]`
+                            : 'N/A'
+                          }
+                        </div>
+                        <div>
+                          <strong>Effect Size:</strong> {result.effectSize?.toFixed(4) || 'N/A'}
+                        </div>
+                        <div>
+                          <strong>Significant:</strong> 
+                          <span className={result.pValue < 0.05 ? styles.significant : styles['not-significant']}>
+                            {result.pValue < 0.05 ? 'Yes' : 'No'}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <p>No analysis results available yet.</p>
+                )}
               </div>
               
               {analysis.economicImpact && (
@@ -174,10 +189,10 @@ const ExperimentDetails: React.FC = () => {
                       <strong>Total Impact:</strong> ${analysis.economicImpact.totalImpact?.toFixed(2) || '0.00'}
                     </div>
                     <div>
-                      <strong>ROI:</strong> {analysis.economicImpact.roi?.toFixed(2) || '0.00'}%
+                      <strong>ROI:</strong> {analysis.economicImpact.roiPercentage?.toFixed(2) || '0.00'}%
                     </div>
                     <div>
-                      <strong>Sample Size:</strong> {analysis.economicImpact.sampleSize || 'N/A'}
+                      <strong>Annualized Impact:</strong> ${analysis.economicImpact.annualizedImpact?.toFixed(2) || '0.00'}
                     </div>
                   </div>
                 </div>
@@ -190,10 +205,10 @@ const ExperimentDetails: React.FC = () => {
                     <strong>Analysis ID:</strong> {analysis.analysisId}
                   </div>
                   <div>
-                    <strong>Created:</strong> {new Date(analysis.createdAt).toLocaleString()}
+                    <strong>Created:</strong> {new Date(analysis.analysisTimestamp).toLocaleString()}
                   </div>
                   <div>
-                    <strong>Status:</strong>
+                    <strong>Status:</strong> 
                     <span className={`${styles.statusBadge} ${styles[analysis.status]}`}>
                       {analysis.status}
                     </span>

@@ -92,8 +92,8 @@ class ApiClient {
   }
 
   // Analysis endpoints
-  async getAnalysis(experimentId: string): Promise<{ data: ExperimentAnalysis }> {
-    return this.request<{ data: ExperimentAnalysis }>(`/experiments/${experimentId}/analysis`)
+  async getAnalysis(experimentId: string): Promise<{ data: { experiment: any, analysis: ExperimentAnalysis } }> {
+    return this.request<{ data: { experiment: any, analysis: ExperimentAnalysis } }>(`/experiments/${experimentId}/analysis`)
   }
 
   async triggerAnalysis(experimentId: string): Promise<ExperimentAnalysis> {
