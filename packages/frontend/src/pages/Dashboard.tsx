@@ -10,6 +10,11 @@ const Dashboard: React.FC = () => {
   const navigate = useNavigate()
   const { data: apiResponse, loading, error, refetch } = useExperiments()
   const experiments = apiResponse?.data?.experiments || []
+  
+  // Sort experiments by creation date (most recent first)
+  const sortedExperiments = [...experiments].sort((a, b) => {
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  })
 
   if (loading) {
     return <Loading message="Loading experiments..." />
@@ -38,25 +43,25 @@ const Dashboard: React.FC = () => {
 
       <div className={styles.stats}>
         <Card title="Total Experiments">
-          <div className={styles.statValue}>{experiments?.length || 0}</div>
+          <div className={styles.statValue}>{sortedExperiments?.length || 0}</div>
         </Card>
         <Card title="Running Experiments">
           <div className={styles.statValue}>
-            {experiments?.filter((exp: any) => exp.status === 'running').length || 0}
+            {sortedExperiments?.filter((exp: any) => exp.status === 'running').length || 0}
           </div>
         </Card>
         <Card title="Completed Experiments">
           <div className={styles.statValue}>
-            {experiments?.filter((exp: any) => exp.status === 'complete').length || 0}
+            {sortedExperiments?.filter((exp: any) => exp.status === 'complete').length || 0}
           </div>
         </Card>
       </div>
 
       <div className={styles.experiments}>
         <h2>Recent Experiments</h2>
-        {experiments && experiments.length > 0 ? (
+        {sortedExperiments && sortedExperiments.length > 0 ? (
           <div className={styles.experimentGrid}>
-            {experiments.map((experiment: any) => (
+            {sortedExperiments.map((experiment: any) => (
               <Card
                 key={experiment.id}
                 title={experiment.name}
@@ -68,7 +73,6 @@ const Dashboard: React.FC = () => {
                 <p><strong>Status:</strong> {experiment.status}</p>
                 <p><strong>Created:</strong> {new Date(experiment.createdAt).toLocaleDateString()}</p>
                 <p><strong>Type:</strong> {experiment.type}</p>
-                <p><strong>Analysis:</strong> {experiment.hasAnalysis ? '✅ Available' : '⏳ Pending'}</p>
                 {experiment.description && (
                   <p><strong>Description:</strong> {experiment.description}</p>
                 )}

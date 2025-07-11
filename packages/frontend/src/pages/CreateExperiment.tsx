@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { ExperimentDefinition } from '@rallyuxr/shared'
-import { useCreateExperiment } from '../hooks/useApi'
+import { useCreateExperiment, useMetricValues } from '../hooks/useApi'
 import Button from '../components/Button'
 import Card from '../components/Card'
 import Loading from '../components/Loading'
@@ -28,21 +28,15 @@ const defaultFormData: FormData = {
   expectedOutcome: 'positive'
 }
 
-const availableMetrics = [
-  'conversion_rate',
-  'revenue_per_user',
-  'session_duration',
-  'bounce_rate',
-  'click_through_rate',
-  'user_engagement',
-  'retention_rate'
-]
-
 export default function CreateExperiment() {
   const navigate = useNavigate()
   const [formData, setFormData] = useState<FormData>(defaultFormData)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const { mutate: createExperiment, loading, error } = useCreateExperiment()
+  const { data: metricsData, loading: metricsLoading, error: metricsError } = useMetricValues()
+
+  // Extract available metrics from API response
+  const availableMetrics = metricsData?.data?.metrics || []
 
   const handleInputChange = (field: keyof FormData, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }))
@@ -99,13 +93,17 @@ export default function CreateExperiment() {
       return
     }
 
+    // Convert date strings to ISO datetime strings
+    const startDateTime = new Date(formData.startDate + 'T00:00:00.000Z').toISOString()
+    const endDateTime = new Date(formData.endDate + 'T23:59:59.999Z').toISOString()
+
     const experimentData: Omit<ExperimentDefinition, 'id' | 'createdAt' | 'updatedAt'> = {
       name: formData.name.trim(),
       description: formData.description.trim(),
       status: 'draft' as ExperimentStatus,
       metrics: formData.metrics,
-      startDate: formData.startDate,
-      endDate: formData.endDate,
+      startDate: startDateTime,
+      endDate: endDateTime,
       expectedOutcome: formData.expectedOutcome
     }
 
@@ -123,7 +121,7 @@ export default function CreateExperiment() {
     navigate({ to: '/' })
   }
 
-  if (loading) {
+  if (loading || metricsLoading) {
     return (
       <div className={styles.createExperiment}>
         <Loading />
@@ -143,6 +141,12 @@ export default function CreateExperiment() {
           {error && (
             <div className={styles.errorBanner}>
               <p>Failed to create experiment: {typeof error === 'string' ? error : 'Unknown error'}</p>
+            </div>
+          )}
+
+          {metricsError && (
+            <div className={styles.errorBanner}>
+              <p>Failed to load metrics: {metricsError}</p>
             </div>
           )}
 
@@ -198,18 +202,27 @@ export default function CreateExperiment() {
               <label>Select Metrics to Track</label>
               <div className={styles.metricsGrid}>
                 {availableMetrics.map(metric => (
-                  <div key={metric} className={styles.metricOption}>
+                  <div key={metric.metricId} className={styles.metricOption}>
                     <label>
                       <input
                         type="checkbox"
-                        checked={formData.metrics.includes(metric)}
-                        onChange={() => handleMetricToggle(metric)}
+                        checked={formData.metrics.includes(metric.metricId)}
+                        onChange={() => handleMetricToggle(metric.metricId)}
                       />
-                      <span>{metric.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
+                      <div className={styles.metricContent}>
+                        <span className={styles.metricName}>{metric.name}</span>
+                        <span className={styles.metricDescription}>{metric.description}</span>
+                        <span className={styles.metricValue}>
+                          ${metric.dollarsPerUnit.toFixed(2)} per {metric.unit}
+                        </span>
+                      </div>
                     </label>
                   </div>
                 ))}
               </div>
+              {availableMetrics.length === 0 && !metricsLoading && (
+                <p className={styles.noMetrics}>No metrics available. Please contact your administrator.</p>
+              )}
               {errors.metrics && <span className={styles.errorText}>{errors.metrics}</span>}
             </div>
           </div>

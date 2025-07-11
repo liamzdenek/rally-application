@@ -2,6 +2,8 @@
   padding: 20px;
   background: transparent;
   min-height: 100vh;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .header {
@@ -9,19 +11,21 @@
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 32px;
+  padding: 20px 0;
 }
 
 .header h1 {
-  font-size: 28px;
+  font-size: 32px;
   font-weight: bold;
   color: #000;
   margin: 0 0 8px 0;
 }
 
 .description {
-  font-size: 16px;
+  font-size: 18px;
   color: #666;
   margin: 0;
+  line-height: 1.5;
 }
 
 .status {
@@ -30,12 +34,13 @@
 }
 
 .statusBadge {
-  padding: 8px 16px;
+  padding: 12px 20px;
   font-weight: bold;
   border: 3px solid #000;
   background: transparent;
   text-transform: uppercase;
   font-size: 14px;
+  letter-spacing: 0.5px;
 }
 
 .statusBadge.draft {
@@ -58,115 +63,274 @@
   color: #fff;
 }
 
-.info {
-  margin-bottom: 32px;
+/* Key Results Section */
+.keyResultsSection {
+  margin-bottom: 40px;
 }
 
-.infoGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 16px;
-}
-
-.infoGrid div {
-  padding: 8px 0;
-}
-
-.charts {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  margin-bottom: 32px;
-}
-
-.chartContainer {
-  margin-top: 16px;
-}
-
-.analysis {
-  margin-bottom: 32px;
-}
-
-.analysisHeader {
-  margin-bottom: 20px;
-}
-
-.analysisResults {
-  margin-top: 20px;
-}
-
-.metrics {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-  margin-bottom: 32px;
-}
-
-.metric {
-  padding: 16px;
-  border: 3px solid #000;
-  background: #f8f9fa;
-}
-
-.metric h4 {
-  margin: 0 0 12px 0;
-  font-size: 18px;
-  font-weight: bold;
-  color: #000;
-}
-
-.metricValue {
+.keyResults {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: 24px;
 }
 
-.impact {
-  font-size: 24px;
-  font-weight: bold;
-  color: #007bff;
+.impactSummary {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
 }
 
-.confidence {
-  font-size: 14px;
-  color: #666;
-}
-
-.metricDetails {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-
-.metricDetails p {
-  margin: 0;
-  font-size: 14px;
-  color: #333;
-}
-
-.economicImpact {
-  padding: 20px;
+.primaryImpact {
+  text-align: center;
+  padding: 24px;
+  background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%);
   border: 3px solid #28a745;
-  background: #f8fff9;
+  border-radius: 8px;
+  min-width: 300px;
 }
 
-.economicImpact h4 {
-  margin: 0 0 16px 0;
+.impactLabel {
+  display: block;
+  font-size: 14px;
+  font-weight: bold;
+  color: #28a745;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.impactValue {
+  display: block;
+  font-size: 48px;
+  font-weight: bold;
+  color: #28a745;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.roiValue {
+  display: block;
   font-size: 18px;
   font-weight: bold;
   color: #28a745;
 }
 
-.economicImpact p {
-  margin: 0 0 8px 0;
-  font-size: 16px;
+.metricsOverview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.metricSummaryCard {
+  padding: 20px;
+  border: 3px solid #000;
+  background: #f8f9fa;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.metricSummaryCard:hover {
+  background: #fff;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.metricName {
+  font-size: 14px;
+  font-weight: bold;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.metricChange {
+  font-size: 32px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.metricLabel {
+  font-size: 12px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.significant {
+  color: #28a745;
+  font-size: 20px;
+}
+
+.notSignificant {
+  color: #ffc107;
+  font-size: 20px;
+}
+
+/* Collapsible Sections */
+.collapsibleSections {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.collapsibleSection {
+  border: 3px solid #000;
+  background: #fff;
+}
+
+.sectionToggle {
+  width: 100%;
+  padding: 20px;
+  background: #f8f9fa;
+  border: none;
+  border-bottom: 3px solid #000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 18px;
+  font-weight: bold;
+  color: #000;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.sectionToggle:hover {
+  background: #e9ecef;
+}
+
+.sectionToggle:focus {
+  outline: none;
+  background: #e9ecef;
+}
+
+.toggleOpen,
+.toggleClosed {
+  font-size: 24px;
+  font-weight: bold;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #000;
+  background: #fff;
+}
+
+.sectionContent {
+  padding: 20px;
+  background: #fff;
+}
+
+/* Analysis Grid for detailed stats */
+.analysisGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.metricResult {
+  padding: 20px;
+  border: 2px solid #dee2e6;
+  background: #f8f9fa;
+}
+
+.metricTitle {
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  font-weight: bold;
+  color: #000;
+  text-align: center;
+}
+
+.statGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  background: #fff;
+  border: 2px solid #dee2e6;
+}
+
+.statLabel {
+  font-size: 12px;
+  font-weight: bold;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.statValue {
+  font-size: 14px;
+  font-weight: bold;
   color: #333;
 }
 
+/* Info Grid */
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.infoItem {
+  padding: 12px 0;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.infoItem:last-child {
+  border-bottom: none;
+}
+
+/* Charts Section */
+.chartsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.metricChartContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* No Data States */
+.noResults,
+.noData {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+.noResults p,
+.noData p {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.noResults small,
+.noData small {
+  font-size: 14px;
+  color: #999;
+}
+
+/* Error States */
 .error {
   text-align: center;
   padding: 40px;
+  background: rgba(220, 53, 69, 0.1);
+  border: 2px solid #dc3545;
 }
 
 .error h2 {
@@ -179,123 +343,76 @@
   margin-bottom: 20px;
 }
 
-/* Responsive */
+/* Responsive Design */
 @media (max-width: 768px) {
+  .experimentDetails {
+    padding: 16px;
+  }
+
   .header {
     flex-direction: column;
     gap: 16px;
     align-items: stretch;
   }
   
-  .charts {
+  .header h1 {
+    font-size: 24px;
+  }
+  
+  .description {
+    font-size: 16px;
+  }
+
+  .primaryImpact {
+    min-width: unset;
+    padding: 20px;
+  }
+
+  .impactValue {
+    font-size: 36px;
+  }
+
+  .metricChange {
+    font-size: 24px;
+  }
+
+  .sectionToggle {
+    padding: 16px;
+    font-size: 16px;
+  }
+
+  .metricsOverview {
+    grid-template-columns: 1fr;
+  }
+
+  .statGrid {
     grid-template-columns: 1fr;
   }
   
   .infoGrid {
     grid-template-columns: 1fr;
   }
-  
-  .metrics {
-    grid-template-columns: 1fr;
+}
+
+@media (max-width: 480px) {
+  .experimentDetails {
+    padding: 12px;
   }
-  
-  .metricDetails {
-    grid-template-columns: 1fr;
+
+  .header h1 {
+    font-size: 20px;
   }
-}
 
-/* Analysis section styles */
-.analysisGrid {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.analysisSection {
-  padding: 16px;
-  border: 3px solid #000;
-  background: #f8f9fa;
-}
-
-.analysisSection h3 {
-  margin: 0 0 16px 0;
-  font-size: 18px;
-  font-weight: bold;
-  color: #000;
-}
-
-.metricResult {
-  margin-bottom: 20px;
-  padding: 12px;
-  border: 2px solid #dee2e6;
-  background: #fff;
-}
-
-.metricResult:last-child {
-  margin-bottom: 0;
-}
-
-.metricResult h4 {
-  margin: 0 0 12px 0;
-  font-size: 16px;
-  font-weight: bold;
-  color: #333;
-}
-
-.statGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 12px;
-}
-
-.statGrid div {
-  font-size: 14px;
-  color: #333;
-}
-
-.significant {
-  color: #28a745;
-  font-weight: bold;
-}
-
-.not-significant {
-  color: #dc3545;
-  font-weight: bold;
-}
-
-.economicGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 16px;
-}
-
-.economicGrid div {
-  font-size: 16px;
-  color: #333;
-}
-
-.detailsGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-}
-
-.detailsGrid div {
-  font-size: 14px;
-  color: #333;
-}
-
-/* Responsive updates for analysis */
-@media (max-width: 768px) {
-  .statGrid {
-    grid-template-columns: 1fr;
+  .impactValue {
+    font-size: 28px;
   }
-  
-  .economicGrid {
-    grid-template-columns: 1fr;
+
+  .metricChange {
+    font-size: 20px;
   }
-  
-  .detailsGrid {
-    grid-template-columns: 1fr;
+
+  .sectionToggle {
+    padding: 12px;
+    font-size: 14px;
   }
 }

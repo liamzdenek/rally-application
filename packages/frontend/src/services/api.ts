@@ -60,10 +60,24 @@ class ApiClient {
   }
 
   async createExperiment(experiment: Omit<ExperimentDefinition, 'id' | 'createdAt' | 'updatedAt'>): Promise<ExperimentDefinition> {
-    return this.request<ExperimentDefinition>('/experiments', {
+    const response = await this.request<{ data: { experimentId: string; status: string; message: string; estimatedCompletionTime: string } }>('/experiments', {
       method: 'POST',
       body: JSON.stringify(experiment),
     })
+    
+    // Transform the API response to match ExperimentDefinition interface
+    return {
+      id: response.data.experimentId,
+      name: experiment.name,
+      description: experiment.description,
+      status: experiment.status || 'draft',
+      metrics: experiment.metrics,
+      startDate: experiment.startDate,
+      endDate: experiment.endDate,
+      expectedOutcome: experiment.expectedOutcome,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    } as ExperimentDefinition
   }
 
   async updateExperiment(id: string, experiment: Partial<ExperimentDefinition>): Promise<ExperimentDefinition> {

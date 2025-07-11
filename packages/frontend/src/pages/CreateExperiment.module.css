@@ -107,8 +107,8 @@
 
 .metricsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
   padding: 16px;
   border: 3px solid #000;
   background: #f8f9fa;
@@ -116,16 +116,26 @@
 
 .metricOption {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  padding: 12px;
+  border: 2px solid #ddd;
+  background: white;
+  transition: all 0.2s;
+}
+
+.metricOption:hover {
+  border-color: #007bff;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.1);
 }
 
 .metricOption label {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  align-items: flex-start;
+  gap: 12px;
   cursor: pointer;
   font-weight: normal;
   font-size: 14px;
+  width: 100%;
 }
 
 .metricOption input[type="checkbox"] {
@@ -134,10 +144,45 @@
   border: 2px solid #000;
   background: transparent;
   cursor: pointer;
+  margin-top: 2px;
+  flex-shrink: 0;
 }
 
 .metricOption input[type="checkbox"]:checked {
   background: #007bff;
+}
+
+.metricContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.metricName {
+  font-weight: bold;
+  color: #000;
+  font-size: 16px;
+}
+
+.metricDescription {
+  color: #666;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.metricValue {
+  color: #007bff;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.noMetrics {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  padding: 20px;
 }
 
 .dateFields {
@@ -172,6 +217,10 @@
   
   .metricsGrid {
     grid-template-columns: 1fr;
+  }
+  
+  .metricOption {
+    padding: 10px;
   }
   
   .actions {
