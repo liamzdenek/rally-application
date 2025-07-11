@@ -1,7 +1,7 @@
 import { ExperimentDefinition, ExperimentResult, ExperimentAnalysis, MetricValue } from '@rallyuxr/shared'
 
 // API Configuration - will be set from environment variables
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.rally-uxr.com'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://z1r1s9h73b.execute-api.us-west-2.amazonaws.com/prod'
 
 // API Client for making HTTP requests
 class ApiClient {
@@ -51,12 +51,12 @@ class ApiClient {
   }
 
   // Experiment endpoints
-  async getExperiments(): Promise<ExperimentDefinition[]> {
-    return this.request<ExperimentDefinition[]>('/experiments')
+  async getExperiments(): Promise<{ data: { experiments: ExperimentDefinition[] } }> {
+    return this.request<{ data: { experiments: ExperimentDefinition[] } }>('/experiments')
   }
 
-  async getExperiment(id: string): Promise<ExperimentDefinition> {
-    return this.request<ExperimentDefinition>(`/experiments/${id}`)
+  async getExperiment(id: string): Promise<{ data: { experiment: ExperimentDefinition } }> {
+    return this.request<{ data: { experiment: ExperimentDefinition } }>(`/experiments/${id}`)
   }
 
   async createExperiment(experiment: Omit<ExperimentDefinition, 'id' | 'createdAt' | 'updatedAt'>): Promise<ExperimentDefinition> {
@@ -80,8 +80,8 @@ class ApiClient {
   }
 
   // Results endpoints
-  async getExperimentResults(experimentId: string): Promise<ExperimentResult[]> {
-    return this.request<ExperimentResult[]>(`/results/experiment/${experimentId}`)
+  async getExperimentResults(experimentId: string): Promise<{ data: { results: any } }> {
+    return this.request<{ data: { results: any } }>(`/experiments/${experimentId}/results`)
   }
 
   async submitResult(result: Omit<ExperimentResult, 'id' | 'timestamp'>): Promise<ExperimentResult> {
@@ -92,8 +92,8 @@ class ApiClient {
   }
 
   // Analysis endpoints
-  async getAnalysis(experimentId: string): Promise<ExperimentAnalysis> {
-    return this.request<ExperimentAnalysis>(`/analysis/${experimentId}`)
+  async getAnalysis(experimentId: string): Promise<{ data: ExperimentAnalysis }> {
+    return this.request<{ data: ExperimentAnalysis }>(`/experiments/${experimentId}/analysis`)
   }
 
   async triggerAnalysis(experimentId: string): Promise<ExperimentAnalysis> {
@@ -103,26 +103,26 @@ class ApiClient {
   }
 
   // Metrics endpoints
-  async getMetricValues(): Promise<MetricValue[]> {
-    return this.request<MetricValue[]>('/metrics')
+  async getMetricValues(): Promise<{ data: { metrics: MetricValue[] } }> {
+    return this.request<{ data: { metrics: MetricValue[] } }>('/metric-values')
   }
 
   async createMetricValue(metric: Omit<MetricValue, 'lastUpdated' | 'version'>): Promise<MetricValue> {
-    return this.request<MetricValue>('/metrics', {
+    return this.request<MetricValue>('/metric-values', {
       method: 'POST',
       body: JSON.stringify(metric),
     })
   }
 
   async updateMetricValue(metric: MetricValue): Promise<MetricValue> {
-    return this.request<MetricValue>(`/metrics/${metric.metricId}`, {
+    return this.request<MetricValue>(`/metric-values/${metric.metricId}`, {
       method: 'PUT',
       body: JSON.stringify(metric),
     })
   }
 
   async deleteMetricValue(metricId: string): Promise<void> {
-    return this.request<void>(`/metrics/${metricId}`, {
+    return this.request<void>(`/metric-values/${metricId}`, {
       method: 'DELETE',
     })
   }

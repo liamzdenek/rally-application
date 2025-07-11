@@ -13,6 +13,11 @@ import {
   updateMetricValue,
   createMetricConfiguration,
 } from './handlers/metric-values.js';
+import {
+  getExperimentAnalysis,
+  listExperimentAnalyses,
+  getSpecificAnalysis,
+} from './handlers/analysis.js';
 
 const app = express();
 
@@ -44,6 +49,11 @@ app.post('/experiments', createExperiment);
 app.get('/experiments', listExperiments);
 app.get('/experiments/:id', getExperiment);
 app.get('/experiments/:id/results', getExperimentResults);
+
+// Analysis endpoints
+app.get('/experiments/:experimentId/analysis', getExperimentAnalysis);
+app.get('/experiments/:experimentId/analyses', listExperimentAnalyses);
+app.get('/experiments/:experimentId/analyses/:analysisId', getSpecificAnalysis);
 
 // Metric Values endpoints
 app.get('/metric-values', getAllMetricConfigurations);

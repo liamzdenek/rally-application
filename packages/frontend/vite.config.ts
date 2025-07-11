@@ -24,7 +24,7 @@ export default defineConfig(({ mode }) => {
     // Define environment variables available to the client
     define: {
       'import.meta.env.VITE_API_BASE_URL': JSON.stringify(
-        env.VITE_API_BASE_URL || 'https://api.rally-uxr.com'
+        env.VITE_API_BASE_URL || 'https://z1r1s9h73b.execute-api.us-west-2.amazonaws.com/prod'
       ),
       'import.meta.env.VITE_APP_VERSION': JSON.stringify(
         process.env.npm_package_version || '1.0.0'

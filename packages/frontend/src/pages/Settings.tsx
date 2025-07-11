@@ -44,7 +44,8 @@ export default function Settings() {
   const [formData, setFormData] = useState<FormData>(defaultFormData)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
-  const { data: metricValues, loading, error, refetch } = useMetricValues()
+  const { data: metricResponse, loading, error, refetch } = useMetricValues()
+  const metricValues = metricResponse?.data?.metrics || []
   const { mutate: createMetricValue, loading: creating } = useCreateMetricValue()
   const { mutate: updateMetricValue, loading: updating } = useUpdateMetricValue()
   const { mutate: deleteMetricValue, loading: deleting } = useDeleteMetricValue()
@@ -368,7 +369,7 @@ export default function Settings() {
             </Card>
           ) : (
             <div className={styles.metricsGrid}>
-              {metricValues.map(metric => (
+              {metricValues.map((metric: any) => (
                 <Card key={metric.metricId}>
                   <div className={styles.metricCard}>
                     <div className={styles.metricHeader}>

@@ -136,10 +136,13 @@ export async function getExperiment(req: Request, res: Response) {
     // Check if results exist
     const results = await dynamodbService.getExperimentResults(validation.data);
     
+    // Check if analysis exists
+    const analysis = await dynamodbService.getLatestExperimentAnalysis(validation.data);
+    
     const responseData = {
       experiment,
       hasResults: !!results,
-      hasAnalysis: false, // This would check for analysis data
+      hasAnalysis: !!analysis,
       participantCount: 0, // This would come from actual participant data
     };
 
@@ -180,11 +183,13 @@ export async function getExperimentResults(req: Request, res: Response) {
       return res.status(response.statusCode).set(response.headers).send(response.body);
     }
 
-    // In a real system, we would also fetch analysis data
+    // Fetch analysis data
+    const analysis = await dynamodbService.getLatestExperimentAnalysis(validation.data);
+    
     const responseData = {
       experiment,
       results,
-      analysis: null, // This would contain ExperimentAnalysis data
+      analysis, // Now contains real ExperimentAnalysis data or null
     };
 
     const response = successResponse(responseData);

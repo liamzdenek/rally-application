@@ -1,6 +1,6 @@
 import React from 'react'
 import { useParams } from '@tanstack/react-router'
-import { useExperiment, useExperimentResults, useExperimentAnalysis, useTriggerAnalysis } from '../hooks/useApi'
+import { useExperiment, useExperimentResults, useExperimentAnalysis } from '../hooks/useApi'
 import Card from '../components/Card'
 import Button from '../components/Button'
 import Loading from '../components/Loading'
@@ -10,17 +10,14 @@ import styles from './ExperimentDetails.module.css'
 const ExperimentDetails: React.FC = () => {
   const { experimentId } = useParams({ from: '/experiment/$experimentId' })
   
-  const { data: experiment, loading: expLoading, error: expError } = useExperiment(experimentId)
-  const { data: results, loading: resultsLoading, refetch: refetchResults } = useExperimentResults(experimentId)
-  const { data: analysis, loading: analysisLoading, refetch: refetchAnalysis } = useExperimentAnalysis(experimentId)
-  const { mutate: triggerAnalysis, loading: triggeringAnalysis } = useTriggerAnalysis()
+  const { data: experimentResponse, loading: expLoading, error: expError } = useExperiment(experimentId)
+  const { data: resultsResponse, loading: resultsLoading, refetch: refetchResults } = useExperimentResults(experimentId)
+  const { data: analysisResponse, loading: analysisLoading, error: analysisError, refetch: refetchAnalysis } = useExperimentAnalysis(experimentId)
+  
+  const experiment = experimentResponse?.data?.experiment
+  const results = resultsResponse?.data?.results
+  const analysis = analysisResponse?.data
 
-  const handleTriggerAnalysis = async () => {
-    const result = await triggerAnalysis(experimentId)
-    if (result) {
-      refetchAnalysis()
-    }
-  }
 
   if (expLoading) {
     return <Loading message="Loading experiment details..." />
@@ -38,14 +35,13 @@ const ExperimentDetails: React.FC = () => {
   }
 
   // Transform results data for charts - extract time series data from metrics
-  const chartData = results ? (() => {
+  const chartData = results?.metrics ? (() => {
     const data: Array<{ timestamp: string; treatment: number; control: number }> = []
     
-    // Get first result and first metric's time series data
-    const firstResult = results[0]
-    const firstMetricId = Object.keys(firstResult.metrics)[0]
-    if (firstMetricId && firstResult.metrics[firstMetricId]) {
-      firstResult.metrics[firstMetricId].timeSeries.forEach((point) => {
+    // Get first metric's time series data
+    const firstMetricId = Object.keys(results.metrics)[0]
+    if (firstMetricId && results.metrics[firstMetricId]) {
+      results.metrics[firstMetricId].timeSeries.forEach((point: any) => {
         data.push({
           timestamp: point.timestamp,
           treatment: point.treatmentValue,
@@ -128,45 +124,89 @@ const ExperimentDetails: React.FC = () => {
       )}
 
       <div className={styles.analysis}>
-        <Card title="Statistical Analysis">
-          <div className={styles.analysisHeader}>
-            <Button
-              onClick={handleTriggerAnalysis}
-              disabled={triggeringAnalysis || analysisLoading}
-              variant="primary"
-            >
-              {triggeringAnalysis ? 'Analyzing...' : 'Run Analysis'}
-            </Button>
-          </div>
-          
-          {analysisLoading ? (
-            <Loading message="Loading analysis..." />
-          ) : analysis ? (
-            <div className={styles.analysisResults}>
-              <div className={styles.metrics}>
-                {Object.entries(analysis.didResults).map(([metricId, result]) => (
-                  <MetricComparison
-                    key={metricId}
-                    controlValue={result.controlMean}
-                    treatmentValue={result.treatmentMean}
-                    metricName={metricId.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                    unit="%"
-                    confidenceLevel={result.pValue < 0.05 ? 95 : (1 - result.pValue) * 100}
-                  />
+        {analysisLoading ? (
+          <Loading message="Loading analysis..." />
+        ) : analysisError ? (
+          <Card title="Statistical Analysis">
+            <div className={styles.error}>
+              <p>Error loading analysis: {analysisError}</p>
+              <Button onClick={refetchAnalysis}>Retry Analysis</Button>
+            </div>
+          </Card>
+        ) : analysis ? (
+          <Card title="Statistical Analysis">
+            <div className={styles.analysisGrid}>
+              <div className={styles.analysisSection}>
+                <h3>Difference-in-Differences Results</h3>
+                {analysis.didResults && Object.entries(analysis.didResults).map(([metricId, result]: [string, any]) => (
+                  <div key={metricId} className={styles.metricResult}>
+                    <h4>{metricId.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</h4>
+                    <div className={styles.statGrid}>
+                      <div>
+                        <strong>Treatment Effect:</strong> {result.treatmentEffect?.toFixed(4) || 'N/A'}
+                      </div>
+                      <div>
+                        <strong>P-Value:</strong> {result.pValue?.toFixed(4) || 'N/A'}
+                      </div>
+                      <div>
+                        <strong>Confidence Interval:</strong>
+                        {result.confidenceInterval
+                          ? `[${result.confidenceInterval.lower?.toFixed(4)}, ${result.confidenceInterval.upper?.toFixed(4)}]`
+                          : 'N/A'
+                        }
+                      </div>
+                      <div>
+                        <strong>Significant:</strong>
+                        <span className={result.pValue < 0.05 ? styles.significant : styles.notSignificant}>
+                          {result.pValue < 0.05 ? 'Yes' : 'No'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 ))}
               </div>
               
-              <div className={styles.economicImpact}>
-                <h4>Economic Impact</h4>
-                <p><strong>Total Impact:</strong> ${analysis.economicImpact.totalImpact.toLocaleString()}</p>
-                <p><strong>Annualized Impact:</strong> ${analysis.economicImpact.annualizedImpact.toLocaleString()}</p>
-                <p><strong>ROI:</strong> {analysis.economicImpact.roiPercentage.toFixed(1)}%</p>
+              {analysis.economicImpact && (
+                <div className={styles.analysisSection}>
+                  <h3>Economic Impact</h3>
+                  <div className={styles.economicGrid}>
+                    <div>
+                      <strong>Total Impact:</strong> ${analysis.economicImpact.totalImpact?.toFixed(2) || '0.00'}
+                    </div>
+                    <div>
+                      <strong>ROI:</strong> {analysis.economicImpact.roi?.toFixed(2) || '0.00'}%
+                    </div>
+                    <div>
+                      <strong>Sample Size:</strong> {analysis.economicImpact.sampleSize || 'N/A'}
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              <div className={styles.analysisSection}>
+                <h3>Analysis Details</h3>
+                <div className={styles.detailsGrid}>
+                  <div>
+                    <strong>Analysis ID:</strong> {analysis.analysisId}
+                  </div>
+                  <div>
+                    <strong>Created:</strong> {new Date(analysis.createdAt).toLocaleString()}
+                  </div>
+                  <div>
+                    <strong>Status:</strong>
+                    <span className={`${styles.statusBadge} ${styles[analysis.status]}`}>
+                      {analysis.status}
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
-          ) : (
-            <p>No analysis available. Click "Run Analysis" to generate statistical insights.</p>
-          )}
-        </Card>
+          </Card>
+        ) : (
+          <Card title="Statistical Analysis">
+            <p>No analysis available yet. Analysis will be generated automatically when sufficient data is collected.</p>
+          </Card>
+        )}
       </div>
     </div>
   )

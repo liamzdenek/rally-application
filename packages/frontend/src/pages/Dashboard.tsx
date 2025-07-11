@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link } from '@tanstack/react-router'
+import { Link, useNavigate } from '@tanstack/react-router'
 import { useExperiments } from '../hooks/useApi'
 import Card from '../components/Card'
 import Button from '../components/Button'
@@ -7,7 +7,9 @@ import Loading from '../components/Loading'
 import styles from './Dashboard.module.css'
 
 const Dashboard: React.FC = () => {
-  const { data: experiments, loading, error, refetch } = useExperiments()
+  const navigate = useNavigate()
+  const { data: apiResponse, loading, error, refetch } = useExperiments()
+  const experiments = apiResponse?.data?.experiments || []
 
   if (loading) {
     return <Loading message="Loading experiments..." />
@@ -40,12 +42,12 @@ const Dashboard: React.FC = () => {
         </Card>
         <Card title="Running Experiments">
           <div className={styles.statValue}>
-            {experiments?.filter(exp => exp.status === 'running').length || 0}
+            {experiments?.filter((exp: any) => exp.status === 'running').length || 0}
           </div>
         </Card>
         <Card title="Completed Experiments">
           <div className={styles.statValue}>
-            {experiments?.filter(exp => exp.status === 'complete').length || 0}
+            {experiments?.filter((exp: any) => exp.status === 'complete').length || 0}
           </div>
         </Card>
       </div>
@@ -54,20 +56,19 @@ const Dashboard: React.FC = () => {
         <h2>Recent Experiments</h2>
         {experiments && experiments.length > 0 ? (
           <div className={styles.experimentGrid}>
-            {experiments.map((experiment) => (
+            {experiments.map((experiment: any) => (
               <Card
                 key={experiment.id}
                 title={experiment.name}
                 onClick={() => {
-                  // Navigate to experiment details
-                  window.location.href = `/experiment/${experiment.id}`
+                  navigate({ to: '/experiment/$experimentId', params: { experimentId: experiment.id } })
                 }}
                 variant={experiment.status === 'running' ? 'highlighted' : 'default'}
               >
-                <p><strong>Metrics:</strong> {experiment.metrics.join(', ')}</p>
                 <p><strong>Status:</strong> {experiment.status}</p>
                 <p><strong>Created:</strong> {new Date(experiment.createdAt).toLocaleDateString()}</p>
-                <p><strong>Expected Outcome:</strong> {experiment.expectedOutcome}</p>
+                <p><strong>Type:</strong> {experiment.type}</p>
+                <p><strong>Analysis:</strong> {experiment.hasAnalysis ? '✅ Available' : '⏳ Pending'}</p>
                 {experiment.description && (
                   <p><strong>Description:</strong> {experiment.description}</p>
                 )}
