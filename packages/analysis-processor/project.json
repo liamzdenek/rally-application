@@ -14,7 +14,7 @@
         "outputPath": "dist/packages/analysis-processor",
         "format": ["cjs"],
         "bundle": false,
-        "main": "packages/analysis-processor/src/main.ts",
+        "main": "packages/analysis-processor/src/index.ts",
         "tsConfig": "packages/analysis-processor/tsconfig.app.json",
         "assets": ["packages/analysis-processor/src/assets"],
         "generatePackageJson": true,
