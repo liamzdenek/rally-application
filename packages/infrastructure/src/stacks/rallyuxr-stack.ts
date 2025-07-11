@@ -7,6 +7,7 @@ import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 import * as eventsources from 'aws-cdk-lib/aws-lambda-event-sources';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -57,9 +58,8 @@ export class RallyUXRStack extends cdk.Stack {
     // ============================================================================
 
     // Experiment Definition Table
-    const experimentDefinitionTable = new dynamodb.Table(this, 'ExperimentDefinitionTable', {
-      tableName: 'RallyUXR-ExperimentDefinition',
-      partitionKey: { name: 'experimentId', type: dynamodb.AttributeType.STRING },
+    const experimentDefinitionTable = new dynamodb.Table(this, 'ExperimentDefinitionTableV3', {
+      partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       removalPolicy: cdk.RemovalPolicy.DESTROY, // For development
       pointInTimeRecovery: true,
@@ -67,10 +67,8 @@ export class RallyUXRStack extends cdk.Stack {
     });
 
     // Experiment Results Table with Stream
-    const experimentResultsTable = new dynamodb.Table(this, 'ExperimentResultsTable', {
-      tableName: 'RallyUXR-ExperimentResults',
+    const experimentResultsTable = new dynamodb.Table(this, 'ExperimentResultsTableV3', {
       partitionKey: { name: 'experimentId', type: dynamodb.AttributeType.STRING },
-      sortKey: { name: 'userId', type: dynamodb.AttributeType.STRING },
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       removalPolicy: cdk.RemovalPolicy.DESTROY, // For development
       pointInTimeRecovery: true,
@@ -79,8 +77,7 @@ export class RallyUXRStack extends cdk.Stack {
     });
 
     // Experiment Analysis Table
-    const experimentAnalysisTable = new dynamodb.Table(this, 'ExperimentAnalysisTable', {
-      tableName: 'RallyUXR-ExperimentAnalysis',
+    const experimentAnalysisTable = new dynamodb.Table(this, 'ExperimentAnalysisTableV2', {
       partitionKey: { name: 'experimentId', type: dynamodb.AttributeType.STRING },
       sortKey: { name: 'analysisId', type: dynamodb.AttributeType.STRING },
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
@@ -90,10 +87,8 @@ export class RallyUXRStack extends cdk.Stack {
     });
 
     // Metric Values Table
-    const metricValuesTable = new dynamodb.Table(this, 'MetricValuesTable', {
-      tableName: 'RallyUXR-MetricValues',
-      partitionKey: { name: 'experimentId', type: dynamodb.AttributeType.STRING },
-      sortKey: { name: 'metricId', type: dynamodb.AttributeType.STRING },
+    const metricValuesTable = new dynamodb.Table(this, 'MetricValuesTableV2', {
+      partitionKey: { name: 'metricId', type: dynamodb.AttributeType.STRING },
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       removalPolicy: cdk.RemovalPolicy.DESTROY, // For development
       pointInTimeRecovery: true,
@@ -136,7 +131,7 @@ export class RallyUXRStack extends cdk.Stack {
     const apiHandlerFunction = new lambda.Function(this, 'ApiHandlerFunction', {
       functionName: 'RallyUXR-ApiHandler',
       runtime: lambda.Runtime.NODEJS_20_X,
-      handler: 'main.handler',
+      handler: 'index.handler',
       code: lambda.Code.fromAsset(API_HANDLER_PATH),
       timeout: cdk.Duration.seconds(30),
       memorySize: 1024,
@@ -161,7 +156,7 @@ export class RallyUXRStack extends cdk.Stack {
     const analysisProcessorFunction = new lambda.Function(this, 'AnalysisProcessorFunction', {
       functionName: 'RallyUXR-AnalysisProcessor',
       runtime: lambda.Runtime.NODEJS_20_X,
-      handler: 'main.handler',
+      handler: 'index.handler',
       code: lambda.Code.fromAsset(ANALYSIS_PROCESSOR_PATH),
       timeout: cdk.Duration.seconds(300), // 5 minutes for analysis processing
       memorySize: 2048,
@@ -177,6 +172,12 @@ export class RallyUXRStack extends cdk.Stack {
     experimentResultsTable.grantReadWriteData(apiHandlerFunction);
     experimentAnalysisTable.grantReadWriteData(apiHandlerFunction);
     metricValuesTable.grantReadWriteData(apiHandlerFunction);
+    
+    // Grant ListTables permission for health check
+    apiHandlerFunction.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['dynamodb:ListTables'],
+      resources: ['*']
+    }));
 
     experimentDefinitionTable.grantReadData(resultsGeneratorFunction);
     experimentResultsTable.grantReadWriteData(resultsGeneratorFunction);

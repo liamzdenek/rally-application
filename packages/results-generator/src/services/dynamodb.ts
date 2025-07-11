@@ -9,11 +9,11 @@ export class DynamoDBService {
 
   constructor() {
     const region = process.env.AWS_REGION || 'us-east-1';
-    this.resultsTableName = process.env.RESULTS_TABLE_NAME || '';
-    this.experimentsTableName = process.env.EXPERIMENTS_TABLE_NAME || '';
+    this.resultsTableName = process.env.EXPERIMENT_RESULTS_TABLE || '';
+    this.experimentsTableName = process.env.EXPERIMENT_DEFINITION_TABLE || '';
     
     if (!this.resultsTableName || !this.experimentsTableName) {
-      throw new Error('RESULTS_TABLE_NAME and EXPERIMENTS_TABLE_NAME environment variables are required');
+      throw new Error('EXPERIMENT_RESULTS_TABLE and EXPERIMENT_DEFINITION_TABLE environment variables are required');
     }
     
     const dynamoClient = new DynamoDBClient({ region });

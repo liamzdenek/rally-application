@@ -1,9 +1,13 @@
 import { Request, Response } from 'express';
+import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda';
 import { dynamodbService } from '../services/dynamodb.js';
 import { validateRequestBody, validatePathParam } from '../utils/validation.js';
 import { successResponse, errorResponse, notFoundResponse, internalErrorResponse } from '../utils/response.js';
 import { CreateExperimentSchema, ExperimentDefinition } from '@rallyuxr/shared';
 import { v4 as uuidv4 } from 'uuid';
+
+const lambda = new LambdaClient({ region: process.env.AWS_REGION || 'us-west-2' });
+const RESULTS_GENERATOR_FUNCTION = process.env.RESULTS_GENERATOR_FUNCTION_NAME;
 
 export async function createExperiment(req: Request, res: Response) {
   console.log('Creating new experiment');
@@ -27,6 +31,29 @@ export async function createExperiment(req: Request, res: Response) {
     };
 
     const createdExperiment = await dynamodbService.createExperiment(experiment);
+    
+    // Asynchronously invoke results-generator Lambda
+    if (!RESULTS_GENERATOR_FUNCTION) {
+      throw new Error('RESULTS_GENERATOR_FUNCTION_NAME environment variable not configured');
+    }
+    
+    try {
+      console.log('Invoking results generator for experiment:', createdExperiment.id);
+      const invokeCommand = new InvokeCommand({
+        FunctionName: RESULTS_GENERATOR_FUNCTION,
+        InvocationType: 'Event', // Async invocation
+        Payload: JSON.stringify({
+          experimentId: createdExperiment.id,
+          experiment: createdExperiment
+        })
+      });
+      
+      await lambda.send(invokeCommand);
+      console.log('Results generator invoked successfully');
+    } catch (error) {
+      console.error('Failed to invoke results generator:', error);
+      throw new Error(`Failed to trigger results generation: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
     
     // Return response matching API contract
     const responseData = {

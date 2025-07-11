@@ -76,7 +76,8 @@ export const handler = serverless(app, {
     console.log('Lambda context:', JSON.stringify(context));
   },
   response: (response: any, event: any, context: any) => {
-    console.log('Lambda response:', JSON.stringify(response));
+    console.log('Lambda response status:', response.statusCode);
+    console.log('Lambda response headers:', response.headers);
   },
 });
 

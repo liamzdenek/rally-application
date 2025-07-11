@@ -5,9 +5,9 @@ import { ExperimentDefinition, MetricValue, ExperimentResult } from '@rallyuxr/s
 const client = new DynamoDBClient({ region: process.env.AWS_REGION || 'us-east-1' });
 const dynamodb = DynamoDBDocument.from(client);
 
-const EXPERIMENTS_TABLE = process.env.EXPERIMENTS_TABLE_NAME;
-const METRIC_VALUES_TABLE = process.env.METRIC_VALUES_TABLE_NAME;
-const RESULTS_TABLE = process.env.RESULTS_TABLE_NAME;
+const EXPERIMENTS_TABLE = process.env.EXPERIMENT_DEFINITION_TABLE;
+const METRIC_VALUES_TABLE = process.env.METRIC_VALUES_TABLE;
+const RESULTS_TABLE = process.env.EXPERIMENT_RESULTS_TABLE;
 
 export class DynamoDBService {
   // Experiments
@@ -76,7 +76,7 @@ export class DynamoDBService {
     // First check if the metric exists
     const existing = await dynamodb.get({
       TableName: METRIC_VALUES_TABLE!,
-      Key: { id },
+      Key: { metricId: id },
     });
     
     if (!existing.Item) {
@@ -84,7 +84,7 @@ export class DynamoDBService {
       return null;
     }
     
-    const updatedMetric = { ...existing.Item, ...updates, id };
+    const updatedMetric = { ...existing.Item, ...updates, metricId: id };
     
     await dynamodb.put({
       TableName: METRIC_VALUES_TABLE!,

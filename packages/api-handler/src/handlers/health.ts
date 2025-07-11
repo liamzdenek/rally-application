@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { successResponse, errorResponse } from '../utils/response.js';
+import { DynamoDBClient, ListTablesCommand } from '@aws-sdk/client-dynamodb';
 
 const dynamoClient = new DynamoDBClient({ region: process.env.AWS_REGION || 'us-east-1' });
 
@@ -19,7 +18,8 @@ export async function healthCheck(req: Request, res: Response) {
 
     // Check DynamoDB connectivity
     try {
-      await dynamoClient.send({ name: 'ListTables', input: {} } as any);
+      const command = new ListTablesCommand({});
+      await dynamoClient.send(command);
       checks.dependencies.dynamodb = 'healthy';
       console.log('DynamoDB health check passed');
     } catch (error) {
@@ -28,11 +28,17 @@ export async function healthCheck(req: Request, res: Response) {
       checks.status = 'degraded';
     }
 
-    const response = successResponse(checks);
-    res.status(response.statusCode).set(response.headers).send(response.body);
+    res.status(200).json({
+      data: checks,
+      message: 'Health check completed'
+    });
+    return;
   } catch (error) {
     console.error('Health check error:', error);
-    const response = errorResponse('HEALTH_CHECK_FAILED', 'Health check failed', 500);
-    res.status(response.statusCode).set(response.headers).send(response.body);
+    res.status(500).json({
+      error: 'HEALTH_CHECK_FAILED',
+      message: 'Health check failed'
+    });
+    return;
   }
 }

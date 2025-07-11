@@ -170,8 +170,8 @@ export async function healthCheck(): Promise<{
     claude: 'unknown',
     environment: {
       hasClaudeApiKey: !!process.env.CLAUDE_API_KEY,
-      hasResultsTable: !!process.env.RESULTS_TABLE_NAME,
-      hasExperimentsTable: !!process.env.EXPERIMENTS_TABLE_NAME,
+      hasResultsTable: !!process.env.EXPERIMENT_RESULTS_TABLE,
+      hasExperimentsTable: !!process.env.EXPERIMENT_DEFINITION_TABLE,
       awsRegion: process.env.AWS_REGION || 'not-set'
     }
   };
